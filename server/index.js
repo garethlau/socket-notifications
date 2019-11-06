@@ -5,6 +5,8 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 const app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
 
 app.use(morgan('combined'));
 app.use(bodyParser.urlencoded({
@@ -34,6 +36,18 @@ mongoose.connect(keys.mongoURI, {
 
 const PORT = process.env.PORT || 5000;
 const environment = process.env.NODE_ENV || 'dev'
+io.origins('*:*') // for latest version
+io.on('connect', (socket) => {
+    console.log("new connection");
+    socket.on('disconnect', () => {
+        console.log("client disconnected")
+    })
+
+    socket.on('notify', (data) => {
+        console.log(data)
+        io.emit('nice', data);
+    })
+});
 
 if (environment === "dev"){
     console.log("\x1b[31m", "ENVIRONMENT IS DEV - ENSURE THAT THIS IS NOT SHOWING WHEN DEPLOYED", "\x1b[0m");
@@ -47,4 +61,4 @@ if (environment === "dev"){
     });
 }
 
-app.listen(PORT);
+server.listen(PORT);
