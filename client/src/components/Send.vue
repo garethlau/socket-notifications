@@ -10,11 +10,16 @@
             <input type="text" v-model="message"/>
         </p>
         <p>
+            Date<br>
+            <input type="text" v-model="date"/>
+        </p>
+        <p>
             Type<br>
             <select v-model="type">
-                <option>Food</option>
-                <option>Workshop</option>
-                <option>Event</option>
+                <option>food</option>
+                <option>workshop</option>
+                <option>event</option>
+                <option>travel</option>
             </select>
         </p>
         <button @click="notify">Send</button>
@@ -28,6 +33,7 @@ export default {
         return {
             title: "",
             message: "",
+            date: "",
             type: null,
         }
     },
@@ -36,8 +42,10 @@ export default {
             console.log("NOTIFY")
             let d = {
                 title: this.title,
-                message: this.message,
-                type: this.type
+                body: this.message,
+                category: this.type,
+                date: this.date,
+                sortDate: new Date().toUTCString()
             }
             console.log(d);
             this.$socket.emit("notify", d)    
